@@ -29,6 +29,8 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.UUID;
 
 /**
  * The common hoodie test harness to provide the basic infrastructure.
@@ -46,7 +48,7 @@ public class HoodieCommonTestHarness {
    * Initializes basePath.
    */
   protected void initPath() {
-    this.basePath = folder.getRoot().getAbsolutePath();
+    this.basePath = Paths.get(folder.getRoot().getAbsolutePath(), UUID.randomUUID().toString()).toString();
   }
 
   /**

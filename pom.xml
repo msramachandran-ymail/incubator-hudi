@@ -114,7 +114,8 @@
     <spark.bundle.hive.shade.prefix></spark.bundle.hive.shade.prefix>
     <utilities.bundle.hive.scope>provided</utilities.bundle.hive.scope>
     <utilities.bundle.hive.shade.prefix></utilities.bundle.hive.shade.prefix>
-    <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+    <argLine>-Xmx1g</argLine>
+    <test.fork.count>1C</test.fork.count>
   </properties>
 
   <scm>
@@ -227,6 +228,8 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven-surefire-plugin.version}</version>
         <configuration>
+          <forkCount>${test.fork.count}</forkCount>
+          <reuseForks>true</reuseForks>
           <skip>${skipUTs}</skip>
           <systemPropertyVariables>
             <log4j.configuration>

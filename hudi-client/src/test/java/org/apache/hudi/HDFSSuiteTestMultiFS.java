@@ -46,9 +46,9 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class TestMultiFS extends HoodieClientTestHarness {
+public class HDFSSuiteTestMultiFS extends HoodieClientTestHarness {
 
-  private static final Logger LOG = LogManager.getLogger(TestMultiFS.class);
+  private static final Logger LOG = LogManager.getLogger(HDFSSuiteTestMultiFS.class);
   private String tablePath = "file:///tmp/hoodie/sample-table";
   protected String tableName = "hoodie_rt";
   private String tableType = HoodieTableType.COPY_ON_WRITE.name();

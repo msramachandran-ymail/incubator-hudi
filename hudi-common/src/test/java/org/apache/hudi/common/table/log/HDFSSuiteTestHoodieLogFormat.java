@@ -80,7 +80,7 @@ import static org.junit.Assert.fail;
  */
 @SuppressWarnings("Duplicates")
 @RunWith(Parameterized.class)
-public class TestHoodieLogFormat extends HoodieCommonTestHarness {
+public class HDFSSuiteTestHoodieLogFormat extends HoodieCommonTestHarness {
 
   private static String BASE_OUTPUT_PATH = "/tmp/";
   private FileSystem fs;
@@ -88,7 +88,7 @@ public class TestHoodieLogFormat extends HoodieCommonTestHarness {
   private int bufferSize = 4096;
   private Boolean readBlocksLazily;
 
-  public TestHoodieLogFormat(Boolean readBlocksLazily) {
+  public HDFSSuiteTestHoodieLogFormat(Boolean readBlocksLazily) {
     this.readBlocksLazily = readBlocksLazily;
   }
 

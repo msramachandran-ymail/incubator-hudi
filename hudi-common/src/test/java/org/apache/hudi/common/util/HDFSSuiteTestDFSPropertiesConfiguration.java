@@ -38,7 +38,7 @@ import static org.junit.Assert.fail;
 /**
  * Tests basic functionality of {@link DFSPropertiesConfiguration}.
  */
-public class TestDFSPropertiesConfiguration {
+public class HDFSSuiteTestDFSPropertiesConfiguration {
 
   private static String dfsBasePath;
   private static HdfsTestService hdfsTestService;
