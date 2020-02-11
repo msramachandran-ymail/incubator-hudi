@@ -209,9 +209,8 @@ public abstract class HoodieClientTestHarness extends HoodieCommonTestHarness im
    * @throws IOException
    */
   protected void initDFS() throws IOException {
-    FileSystem.closeAll();
-    hdfsTestService = new HdfsTestService();
-    dfsCluster = hdfsTestService.start(true);
+    hdfsTestService = HDFSSuiteTest.hdfsTestService;
+    dfsCluster = HDFSSuiteTest.dfsCluster;
 
     // Create a temp folder as the base path
     dfs = dfsCluster.getFileSystem();
@@ -225,13 +224,8 @@ public abstract class HoodieClientTestHarness extends HoodieCommonTestHarness im
    * @throws IOException
    */
   protected void cleanupDFS() throws IOException {
-    if (hdfsTestService != null) {
-      hdfsTestService.stop();
-      dfsCluster.shutdown();
-    }
-    // Need to closeAll to clear FileSystem.Cache, required because DFS and LocalFS used in the
-    // same JVM
-    FileSystem.closeAll();
+    hdfsTestService = null;
+    dfsCluster = null;
   }
 
   /**

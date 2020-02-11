@@ -72,6 +72,7 @@ public class UtilitiesTestBase {
   protected transient SparkSession sparkSession = null;
   protected transient SQLContext sqlContext;
   protected static HiveServer2 hiveServer;
+  protected static HiveTestService hiveService;
 
   @BeforeClass
   public static void initClass() throws Exception {
@@ -85,7 +86,7 @@ public class UtilitiesTestBase {
     dfsBasePath = dfs.getWorkingDirectory().toString();
     dfs.mkdirs(new Path(dfsBasePath));
     if (startHiveService) {
-      HiveTestService hiveService = new HiveTestService(hdfsTestService.getHadoopConf());
+      hiveService = new HiveTestService(hdfsTestService.getHadoopConf());
       hiveServer = hiveService.start();
       clearHiveDb();
     }
@@ -95,9 +96,12 @@ public class UtilitiesTestBase {
   public static void cleanupClass() throws Exception {
     if (hdfsTestService != null) {
       hdfsTestService.stop();
+      hdfsTestService = null;
     }
-    if (hiveServer != null) {
-      hiveServer.stop();
+    if (hiveService != null) {
+      hiveService.stop();
+      hiveService = null;
+      hiveServer = null;
     }
   }
 

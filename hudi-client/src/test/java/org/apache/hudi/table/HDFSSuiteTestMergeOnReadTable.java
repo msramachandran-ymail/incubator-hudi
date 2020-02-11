@@ -78,7 +78,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class TestMergeOnReadTable extends HoodieClientTestHarness {
+public class HDFSSuiteTestMergeOnReadTable extends HoodieClientTestHarness {
 
   @Before
   public void init() throws IOException {
