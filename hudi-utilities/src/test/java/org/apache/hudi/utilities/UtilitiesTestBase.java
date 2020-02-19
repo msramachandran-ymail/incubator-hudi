@@ -18,6 +18,16 @@
 
 package org.apache.hudi.utilities;
 
+import com.google.common.collect.ImmutableList;
+import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.generic.IndexedRecord;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.apache.hadoop.hdfs.MiniDFSCluster;
+import org.apache.hadoop.hive.conf.HiveConf;
+import org.apache.hive.service.server.HiveServer2;
+import org.apache.hudi.common.HoodieCommonTestHarness;
 import org.apache.hudi.common.HoodieTestDataGenerator;
 import org.apache.hudi.common.TestRawTripPayload;
 import org.apache.hudi.common.minicluster.HdfsTestService;
@@ -31,16 +41,6 @@ import org.apache.hudi.hive.HiveSyncConfig;
 import org.apache.hudi.hive.HoodieHiveClient;
 import org.apache.hudi.hive.util.HiveTestService;
 import org.apache.hudi.utilities.sources.TestDataSource;
-
-import com.google.common.collect.ImmutableList;
-import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.generic.IndexedRecord;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.DistributedFileSystem;
-import org.apache.hadoop.hdfs.MiniDFSCluster;
-import org.apache.hadoop.hive.conf.HiveConf;
-import org.apache.hive.service.server.HiveServer2;
 import org.apache.parquet.avro.AvroParquetWriter;
 import org.apache.parquet.hadoop.ParquetWriter;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -62,59 +62,68 @@ import java.util.List;
  * Abstract test that provides a dfs & spark contexts.
  *
  */
-public class UtilitiesTestBase {
+public class UtilitiesTestBase extends HoodieCommonTestHarness {
 
   protected static String dfsBasePath;
   protected static HdfsTestService hdfsTestService;
   protected static MiniDFSCluster dfsCluster;
   protected static DistributedFileSystem dfs;
-  protected transient JavaSparkContext jsc = null;
-  protected transient SparkSession sparkSession = null;
-  protected transient SQLContext sqlContext;
+  protected static JavaSparkContext jsc = null;
+  protected static SparkSession sparkSession = null;
+  protected static SQLContext sqlContext;
+  protected static HiveTestService hiveService;
   protected static HiveServer2 hiveServer;
+  private static int instanceCount = 0;
 
   @BeforeClass
-  public static void initClass() throws Exception {
-    initClass(false);
-  }
-
-  static void initClass(boolean startHiveService) throws Exception {
+  public static final synchronized void initClass() throws Exception {
+    instanceCount++;
+    if (instanceCount > 1) {
+      return;
+    }
     hdfsTestService = new HdfsTestService();
     dfsCluster = hdfsTestService.start(true);
     dfs = dfsCluster.getFileSystem();
     dfsBasePath = dfs.getWorkingDirectory().toString();
     dfs.mkdirs(new Path(dfsBasePath));
-    if (startHiveService) {
-      HiveTestService hiveService = new HiveTestService(hdfsTestService.getHadoopConf());
-      hiveServer = hiveService.start();
-      clearHiveDb();
-    }
-  }
+    hiveService = new HiveTestService(hdfsTestService.getHadoopConf());
+    hiveServer = hiveService.start();
+    clearHiveDb();
 
-  @AfterClass
-  public static void cleanupClass() throws Exception {
-    if (hdfsTestService != null) {
-      hdfsTestService.stop();
-    }
-    if (hiveServer != null) {
-      hiveServer.stop();
-    }
-  }
-
-  @Before
-  public void setup() throws Exception {
-    TestDataSource.initDataGen();
-    jsc = UtilHelpers.buildSparkContext(this.getClass().getName() + "-hoodie", "local[2]");
+    jsc = UtilHelpers.buildSparkContext(UtilitiesTestBase.class.getName() + "-hoodie", "local[2]");
     sqlContext = new SQLContext(jsc);
     sparkSession = SparkSession.builder().config(jsc.getConf()).getOrCreate();
   }
 
-  @After
-  public void teardown() throws Exception {
-    TestDataSource.resetDataGen();
+  @AfterClass
+  public static final synchronized void cleanupClass() throws Exception {
+    instanceCount--;
+    if (instanceCount > 0) {
+      return;
+    }
+    if (hdfsTestService != null) {
+      hdfsTestService.stop();
+      hdfsTestService = null;
+    }
+    if (hiveService != null) {
+      hiveService.stop();
+      hiveService = null;
+    }
+
     if (jsc != null) {
       jsc.stop();
+      jsc = null;
     }
+  }
+
+  @Before
+  public final void setup() {
+    TestDataSource.initDataGen();
+  }
+
+  @After
+  public final void teardown() {
+    TestDataSource.resetDataGen();
   }
 
   /**

@@ -18,16 +18,12 @@
 
 package org.apache.hudi.utilities;
 
-import org.apache.hudi.common.HoodieCommonTestHarness;
-import org.apache.hudi.common.HoodieTestDataGenerator;
-import org.apache.hudi.common.model.HoodieTestUtils;
-import org.apache.hudi.common.util.FSUtils;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.hudi.common.HoodieTestDataGenerator;
+import org.apache.hudi.common.model.HoodieTestUtils;
+import org.apache.hudi.common.util.FSUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +35,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class TestHoodieSnapshotCopier extends HoodieCommonTestHarness {
+public class TestHoodieSnapshotCopier extends UtilitiesTestBase {
 
   private static String TEST_WRITE_TOKEN = "1-0-1";
 
@@ -47,7 +43,6 @@ public class TestHoodieSnapshotCopier extends HoodieCommonTestHarness {
   private String basePath = null;
   private String outputPath = null;
   private FileSystem fs = null;
-  private JavaSparkContext jsc = null;
 
   @Before
   public void init() throws IOException {
@@ -59,9 +54,6 @@ public class TestHoodieSnapshotCopier extends HoodieCommonTestHarness {
     final Configuration hadoopConf = HoodieTestUtils.getDefaultHadoopConf();
     fs = FSUtils.getFs(basePath, hadoopConf);
     HoodieTestUtils.init(hadoopConf, basePath);
-    // Start a local Spark job
-    SparkConf conf = new SparkConf().setAppName("snapshot-test-job").setMaster("local[2]");
-    jsc = new JavaSparkContext(conf);
   }
 
   @Test
@@ -151,9 +143,6 @@ public class TestHoodieSnapshotCopier extends HoodieCommonTestHarness {
   public void cleanup() {
     if (rootPath != null) {
       new File(rootPath).delete();
-    }
-    if (jsc != null) {
-      jsc.stop();
     }
   }
 }

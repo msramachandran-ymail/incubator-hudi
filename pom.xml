@@ -115,7 +115,7 @@
     <utilities.bundle.hive.scope>provided</utilities.bundle.hive.scope>
     <utilities.bundle.hive.shade.prefix></utilities.bundle.hive.shade.prefix>
     <argLine>-Xmx1g</argLine>
-    <test.fork.count>1C</test.fork.count>
+    <test.fork.count>1</test.fork.count>
   </properties>
 
   <scm>

@@ -56,6 +56,28 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven-surefire-plugin.version}</version>
+        <configuration>
+          <forkCount>1</forkCount>
+          <reuseForks>true</reuseForks>
+          <parallel>classes</parallel>
+          <threadCount>1</threadCount>
+          <perCoreThreadCount>true</perCoreThreadCount>
+          <skip>${skipUTs}</skip>
+          <systemPropertyVariables>
+            <log4j.configuration>
+              ${surefire-log4j.file}
+            </log4j.configuration>
+          </systemPropertyVariables>
+          <!-- Excludes integration tests when unit tests are run. -->
+          <excludes>
+            <exclude>**/IT*.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
     </plugins>
 
     <resources>

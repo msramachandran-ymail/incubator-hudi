@@ -129,7 +129,8 @@ public class HdfsTestService {
     // allow current user to impersonate others
     String user = System.getProperty("user.name");
     config.set("hadoop.proxyuser." + user + ".groups", "*");
-    config.set("hadoop.proxyuser." + user + ".hosts", "*");
+
+    config.setInt("hive.server2.webui.port", 0);
     return config;
   }
 

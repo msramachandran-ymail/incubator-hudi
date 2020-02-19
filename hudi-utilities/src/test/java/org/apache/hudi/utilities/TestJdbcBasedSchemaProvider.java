@@ -18,15 +18,13 @@
 
 package org.apache.hudi.utilities;
 
+import org.apache.avro.Schema;
 import org.apache.hudi.common.util.TypedProperties;
 import org.apache.hudi.exception.HoodieException;
 import org.apache.hudi.utilities.schema.JdbcbasedSchemaProvider;
-
-import org.apache.avro.Schema;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,15 +36,13 @@ import java.sql.SQLException;
 
 import static org.junit.Assert.assertEquals;
 
-public class TestJdbcbasedSchemaProvider {
+public class TestJdbcBasedSchemaProvider extends UtilitiesTestBase {
 
-  private static final Logger LOG = LogManager.getLogger(TestJdbcbasedSchemaProvider.class);
+  private static final Logger LOG = LogManager.getLogger(TestJdbcBasedSchemaProvider.class);
   private static final TypedProperties PROPS = new TypedProperties();
-  protected transient JavaSparkContext jsc = null;
 
   @Before
   public void init() {
-    jsc = UtilHelpers.buildSparkContext(this.getClass().getName() + "-hoodie", "local[2]");
     PROPS.setProperty("hoodie.deltastreamer.schemaprovider.source.schema.jdbc.connection.url", "jdbc:h2:mem:test_mem");
     PROPS.setProperty("hoodie.deltastreamer.schemaprovider.source.schema.jdbc.driver.type", "org.h2.Driver");
     PROPS.setProperty("hoodie.deltastreamer.schemaprovider.source.schema.jdbc.username", "sa");
@@ -56,15 +52,8 @@ public class TestJdbcbasedSchemaProvider {
     PROPS.setProperty("hoodie.deltastreamer.schemaprovider.source.schema.jdbc.nullable", "false");
   }
 
-  @After
-  public void teardown() throws Exception {
-    if (jsc != null) {
-      jsc.stop();
-    }
-  }
-
   @Test
-  public void testJdbcbasedSchemaProvider() throws Exception {
+  public void testJdbcBasedSchemaProvider() throws Exception {
     try {
       initH2Database();
       Schema sourceSchema = UtilHelpers.createSchemaProvider(JdbcbasedSchemaProvider.class.getName(), PROPS, jsc).getSourceSchema();

@@ -18,9 +18,13 @@
 
 package org.apache.hudi.utilities;
 
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericRecord;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.hudi.DataSourceWriteOptions;
 import org.apache.hudi.common.HoodieTestDataGenerator;
-import org.apache.hudi.keygen.SimpleKeyGenerator;
 import org.apache.hudi.common.model.HoodieCommitMetadata;
 import org.apache.hudi.common.model.HoodieTableType;
 import org.apache.hudi.common.model.OverwriteWithLatestAvroPayload;
@@ -33,11 +37,12 @@ import org.apache.hudi.common.util.FSUtils;
 import org.apache.hudi.common.util.Option;
 import org.apache.hudi.common.util.TypedProperties;
 import org.apache.hudi.config.HoodieCompactionConfig;
-import org.apache.hudi.exception.TableNotFoundException;
 import org.apache.hudi.exception.HoodieException;
+import org.apache.hudi.exception.TableNotFoundException;
 import org.apache.hudi.hive.HiveSyncConfig;
 import org.apache.hudi.hive.HoodieHiveClient;
 import org.apache.hudi.hive.MultiPartKeysValueExtractor;
+import org.apache.hudi.keygen.SimpleKeyGenerator;
 import org.apache.hudi.utilities.deltastreamer.HoodieDeltaStreamer;
 import org.apache.hudi.utilities.deltastreamer.HoodieDeltaStreamer.Operation;
 import org.apache.hudi.utilities.schema.FilebasedSchemaProvider;
@@ -50,12 +55,6 @@ import org.apache.hudi.utilities.sources.TestDataSource;
 import org.apache.hudi.utilities.sources.config.TestSourceConfig;
 import org.apache.hudi.utilities.transform.SqlQueryBasedTransformer;
 import org.apache.hudi.utilities.transform.Transformer;
-
-import org.apache.avro.Schema;
-import org.apache.avro.generic.GenericRecord;
-import org.apache.hadoop.fs.FSDataInputStream;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.spark.api.java.JavaRDD;
@@ -67,10 +66,7 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.api.java.UDF4;
 import org.apache.spark.sql.functions;
 import org.apache.spark.sql.types.DataTypes;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -99,16 +95,14 @@ public class TestHoodieDeltaStreamer extends UtilitiesTestBase {
   private static final String PROPS_FILENAME_TEST_SOURCE = "test-source.properties";
   private static final String PROPS_FILENAME_TEST_INVALID = "test-invalid.properties";
   private static final String PROPS_FILENAME_TEST_PARQUET = "test-parquet-dfs-source.properties";
-  private static final String PARQUET_SOURCE_ROOT = dfsBasePath + "/parquetFiles";
+  private static final String PARQUET_SOURCE_ROOT = dfsBasePath + "/delta_streamer/parquetFiles";
   private static final int PARQUET_NUM_RECORDS = 5;
   private static final Logger LOG = LogManager.getLogger(TestHoodieDeltaStreamer.class);
 
   private static int parquetTestNum = 1;
 
   @BeforeClass
-  public static void initClass() throws Exception {
-    UtilitiesTestBase.initClass(true);
-
+  public static void beforeClass() throws Exception {
     // prepare the configs.
     UtilitiesTestBase.Helpers.copyToDFS("delta-streamer-config/base.properties", dfs, dfsBasePath + "/base.properties");
     UtilitiesTestBase.Helpers.copyToDFS("delta-streamer-config/sql-transformer.properties", dfs,
@@ -156,21 +150,6 @@ public class TestHoodieDeltaStreamer extends UtilitiesTestBase {
     UtilitiesTestBase.Helpers.savePropsToDFS(invalidProps, dfs, dfsBasePath + "/" + PROPS_FILENAME_TEST_INVALID);
 
     prepareParquetDFSFiles(PARQUET_NUM_RECORDS);
-  }
-
-  @AfterClass
-  public static void cleanupClass() throws Exception {
-    UtilitiesTestBase.cleanupClass();
-  }
-
-  @Before
-  public void setup() throws Exception {
-    super.setup();
-  }
-
-  @After
-  public void teardown() throws Exception {
-    super.teardown();
   }
 
   static class TestHelpers {

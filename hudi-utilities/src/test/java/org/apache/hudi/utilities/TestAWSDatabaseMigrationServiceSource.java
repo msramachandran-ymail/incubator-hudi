@@ -18,18 +18,13 @@
 
 package org.apache.hudi.utilities;
 
-import org.apache.hudi.payload.AWSDmsAvroPayload;
-import org.apache.hudi.utilities.transform.AWSDmsTransformer;
-
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.hudi.payload.AWSDmsAvroPayload;
+import org.apache.hudi.utilities.transform.AWSDmsTransformer;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -39,23 +34,7 @@ import java.util.Arrays;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class TestAWSDatabaseMigrationServiceSource {
-
-  private static JavaSparkContext jsc;
-  private static SparkSession spark;
-
-  @BeforeClass
-  public static void setupTest() {
-    jsc = UtilHelpers.buildSparkContext("aws-dms-test", "local[2]");
-    spark = SparkSession.builder().config(jsc.getConf()).getOrCreate();
-  }
-
-  @AfterClass
-  public static void tearDownTest() {
-    if (jsc != null) {
-      jsc.stop();
-    }
-  }
+public class TestAWSDatabaseMigrationServiceSource extends UtilitiesTestBase {
 
   @Test
   public void testPayload() throws IOException {
@@ -94,11 +73,11 @@ public class TestAWSDatabaseMigrationServiceSource {
   @Test
   public void testTransformer() {
     AWSDmsTransformer transformer = new AWSDmsTransformer();
-    Dataset<Row> inputFrame = spark.createDataFrame(Arrays.asList(
+    Dataset<Row> inputFrame = sparkSession.createDataFrame(Arrays.asList(
         new Record("1", 3433L),
         new Record("2", 3433L)), Record.class);
 
-    Dataset<Row> outputFrame = transformer.apply(jsc, spark, inputFrame, null);
+    Dataset<Row> outputFrame = transformer.apply(jsc, sparkSession, inputFrame, null);
     assertTrue(Arrays.asList(outputFrame.schema().fields()).stream()
         .map(f -> f.name()).anyMatch(n -> n.equals(AWSDmsAvroPayload.OP_FIELD)));
     assertTrue(outputFrame.select(AWSDmsAvroPayload.OP_FIELD).collectAsList().stream()

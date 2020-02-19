@@ -18,6 +18,7 @@
 
 package org.apache.hudi.utilities.sources;
 
+import org.apache.avro.generic.GenericRecord;
 import org.apache.hudi.AvroConversionUtils;
 import org.apache.hudi.common.HoodieTestDataGenerator;
 import org.apache.hudi.common.util.Option;
@@ -27,8 +28,6 @@ import org.apache.hudi.utilities.deltastreamer.SourceFormatAdapter;
 import org.apache.hudi.utilities.schema.FilebasedSchemaProvider;
 import org.apache.hudi.utilities.sources.helpers.KafkaOffsetGen.CheckpointUtils;
 import org.apache.hudi.utilities.sources.helpers.KafkaOffsetGen.Config;
-
-import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.spark.api.java.JavaRDD;
@@ -37,9 +36,7 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.streaming.kafka010.KafkaTestUtils;
 import org.apache.spark.streaming.kafka010.OffsetRange;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -58,27 +55,15 @@ public class TestKafkaSource extends UtilitiesTestBase {
   private FilebasedSchemaProvider schemaProvider;
   private KafkaTestUtils testUtils;
 
-  @BeforeClass
-  public static void initClass() throws Exception {
-    UtilitiesTestBase.initClass();
-  }
-
-  @AfterClass
-  public static void cleanupClass() throws Exception {
-    UtilitiesTestBase.cleanupClass();
-  }
-
   @Before
-  public void setup() throws Exception {
-    super.setup();
+  public void befordEach() throws Exception {
     schemaProvider = new FilebasedSchemaProvider(Helpers.setupSchemaOnDFS(), jsc);
     testUtils = new KafkaTestUtils();
     testUtils.setup();
   }
 
   @After
-  public void teardown() throws Exception {
-    super.teardown();
+  public void afterEach() {
     testUtils.teardown();
   }
 

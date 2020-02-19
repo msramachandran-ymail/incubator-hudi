@@ -18,10 +18,9 @@
 
 package org.apache.hudi.utilities.sources;
 
+import org.apache.hadoop.fs.Path;
 import org.apache.hudi.common.model.HoodieRecord;
 import org.apache.hudi.common.util.TypedProperties;
-
-import org.apache.hadoop.fs.Path;
 import org.junit.Before;
 
 import java.io.IOException;
@@ -33,8 +32,7 @@ import java.util.List;
 public class TestParquetDFSSource extends AbstractDFSSourceTestBase {
 
   @Before
-  public void setup() throws Exception {
-    super.setup();
+  public void beforeTest() throws Exception {
     this.dfsRoot = dfsBasePath + "/parquetFiles";
     this.fileSuffix = ".parquet";
   }

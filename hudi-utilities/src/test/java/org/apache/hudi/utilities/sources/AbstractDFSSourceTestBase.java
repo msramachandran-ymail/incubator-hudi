@@ -18,6 +18,11 @@
 
 package org.apache.hudi.utilities.sources;
 
+import org.apache.avro.generic.GenericRecord;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.LocatedFileStatus;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.RemoteIterator;
 import org.apache.hudi.AvroConversionUtils;
 import org.apache.hudi.common.HoodieTestDataGenerator;
 import org.apache.hudi.common.model.HoodieRecord;
@@ -25,20 +30,11 @@ import org.apache.hudi.common.util.Option;
 import org.apache.hudi.utilities.UtilitiesTestBase;
 import org.apache.hudi.utilities.deltastreamer.SourceFormatAdapter;
 import org.apache.hudi.utilities.schema.FilebasedSchemaProvider;
-
-import org.apache.avro.generic.GenericRecord;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.LocatedFileStatus;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.RemoteIterator;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -57,25 +53,9 @@ public abstract class AbstractDFSSourceTestBase extends UtilitiesTestBase {
   String fileSuffix;
   HoodieTestDataGenerator dataGenerator = new HoodieTestDataGenerator();
 
-  @BeforeClass
-  public static void initClass() throws Exception {
-    UtilitiesTestBase.initClass();
-  }
-
-  @AfterClass
-  public static void cleanupClass() throws Exception {
-    UtilitiesTestBase.cleanupClass();
-  }
-
   @Before
-  public void setup() throws Exception {
-    super.setup();
+  public final void abstractSetup() throws Exception {
     schemaProvider = new FilebasedSchemaProvider(Helpers.setupSchemaOnDFS(), jsc);
-  }
-
-  @After
-  public void teardown() throws Exception {
-    super.teardown();
   }
 
   /**
