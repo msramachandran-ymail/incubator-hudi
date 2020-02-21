@@ -23,7 +23,7 @@ mode=$1
 if [ "$mode" = "unit" ];
 then
   echo "Running Unit Tests"
-  mvn test -DskipITs=true -B
+  mvn test -DskipITs=true -Dtest.fork.count=1 -B
 elif [ "$mode" = "integration" ];
 then
   echo "Running Integration Tests"
