@@ -40,11 +40,6 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>hudi-cli</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>hudi-client</artifactId>
       <version>${project.version}</version>
     </dependency>
