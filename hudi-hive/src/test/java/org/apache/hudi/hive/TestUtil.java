@@ -82,6 +82,7 @@ public class TestUtil {
   private static MiniDFSCluster dfsCluster;
   private static ZooKeeperServer zkServer;
   private static HiveServer2 hiveServer;
+  private static HiveTestService hiveService;
   private static Configuration configuration;
   static HiveSyncConfig hiveSyncConfig;
   private static DateTimeFormatter dtfOut;
@@ -99,7 +100,7 @@ public class TestUtil {
       zkServer = zkService.start();
     }
     if (hiveServer == null) {
-      HiveTestService hiveService = new HiveTestService(configuration);
+      hiveService = new HiveTestService(configuration);
       hiveServer = hiveService.start();
     }
     fileSystem = FileSystem.get(configuration);
@@ -139,7 +140,6 @@ public class TestUtil {
     return hiveServer.getHiveConf();
   }
 
-  @SuppressWarnings("unused")
   public static void shutdown() {
     if (hiveServer != null) {
       hiveServer.stop();
@@ -149,6 +149,11 @@ public class TestUtil {
     }
     if (zkServer != null) {
       zkServer.shutdown();
+    }
+    if (hiveService != null) {
+      hiveService.stop();
+      hiveService = null;
+      hiveServer = null;
     }
   }
 
