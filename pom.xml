@@ -251,7 +251,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.7.8</version>
+          <version>0.8.5</version>
           <executions>
             <!--
                 Prepares the property pointing to the JaCoCo runtime agent which
@@ -271,7 +271,7 @@
               <id>post-unit-test</id>
               <phase>test</phase>
               <goals>
-                <goal>report</goal>
+                <goal>report-aggregate</goal>
               </goals>
               <configuration>
                 <!-- Sets the output directory for the code coverage report. -->
