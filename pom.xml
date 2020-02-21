@@ -51,6 +51,7 @@
     <module>packaging/hudi-timeline-server-bundle</module>
     <module>docker/hoodie/hadoop</module>
     <module>hudi-integ-test</module>
+    <module>hudi-test-coverage-aggregator</module>
   </modules>
 
   <licenses>
@@ -115,6 +116,7 @@
     <utilities.bundle.hive.scope>provided</utilities.bundle.hive.scope>
     <utilities.bundle.hive.shade.prefix></utilities.bundle.hive.shade.prefix>
     <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+    <jacoco.version>0.8.5</jacoco.version>
   </properties>
 
   <scm>
@@ -251,7 +253,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.5</version>
+          <version>${jacoco.version}</version>
           <executions>
             <!--
                 Prepares the property pointing to the JaCoCo runtime agent which
@@ -271,7 +273,7 @@
               <id>post-unit-test</id>
               <phase>test</phase>
               <goals>
-                <goal>report-aggregate</goal>
+                <goal>report</goal>
               </goals>
               <configuration>
                 <!-- Sets the output directory for the code coverage report. -->
