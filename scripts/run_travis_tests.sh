@@ -23,7 +23,7 @@ mode=$1
 if [ "$mode" = "unit" ];
 then
   echo "Running Unit Tests"
-  mvn verify -DskipITs=true -B
+  mvn test -DskipITs=true -B
 elif [ "$mode" = "integration" ];
 then
   echo "Running Integration Tests"
