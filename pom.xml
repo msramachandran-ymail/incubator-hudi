@@ -295,6 +295,11 @@
               </configuration>
             </execution>
           </executions>
+          <configuration>
+            <excludes>
+              <exclude>org/apache/hudi/common/model/*</exclude>
+            </excludes>
+          </configuration>
         </plugin>
         <plugin>
           <!-- excludes are inherited -->
